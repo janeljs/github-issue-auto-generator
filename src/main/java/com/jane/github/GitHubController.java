@@ -7,39 +7,40 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Controller
+@RestController
 public class GitHubController {
     private final String username;
     private final String repositoryName;
     private final String token;
     private final RestTemplate restTemplate;
-    private final HttpHeaders httpHeaders;
 
-    public GitHubController(RestTemplateBuilder builder,
+    public GitHubController(RestTemplateBuilder restTemplateBuilder,
                             @Value("${github.username}") String username,
                             @Value("${github.repository.name}") String repositoryName,
                             @Value("${github.personal.access.token}") String token) {
+        restTemplate = restTemplateBuilder.build();
         this.username = username;
         this.repositoryName = repositoryName;
         this.token = token;
-        this.restTemplate = builder.build();
-        this.httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
     }
 
     @GetMapping("/create")
-    public void createIssues(@RequestParam("week_number") int weekNumber,
-                             @RequestParam("start_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
-                             @RequestParam("issue_count") int issueCount) {
+    public String createIssues(@RequestParam("week_number") int weekNumber,
+                               @RequestParam("start_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
+                               @RequestParam("issue_count") int issueCount) {
+
         String url = "https://api.github.com/repos/" + username + "/" + repositoryName + "/issues";
+
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
         httpHeaders.add(HttpHeaders.AUTHORIZATION, token);
 
         for (int i = 0; i < issueCount; i++) {
@@ -52,5 +53,7 @@ public class GitHubController {
                 weekNumber++;
             }
         }
+
+        return "이슈 생성 완료";
     }
 }
