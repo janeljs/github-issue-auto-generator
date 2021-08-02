@@ -10,7 +10,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GitHubRequest {
+
     private String title;
     private List<String> labels;
     private String assignee;
+
 }

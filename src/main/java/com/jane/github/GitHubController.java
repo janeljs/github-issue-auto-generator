@@ -17,6 +17,7 @@ import java.util.List;
 
 @RestController
 public class GitHubController {
+
     private final String username;
     private final String repositoryName;
     private final String token;
@@ -56,4 +57,5 @@ public class GitHubController {
 
         return "이슈 생성 완료";
     }
+
 }
